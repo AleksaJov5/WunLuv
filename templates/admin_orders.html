@@ -1,0 +1,208 @@
+<!-- templates/admin_orders.html -->
+{% extends "base.html" %}
+
+{% block title %}Admin - Orders{% endblock %}
+
+{% block extra_css %}
+<style>
+        .admin-header {
+                background: linear-gradient(135deg, #2c2c2c 0%, #4a4a4a 100%);
+                color: white;
+                padding: 2rem;
+                text-align: center;
+        }
+
+        .admin-container {
+                max-width: 1200px;
+                margin: 2rem auto;
+                padding: 0 2rem;
+        }
+
+        .filters {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 2rem;
+                flex-wrap: wrap;
+        }
+
+        .filter-btn {
+                padding: 0.5rem 1rem;
+                border: 2px solid #ddd;
+                background: white;
+                border-radius: 25px;
+                cursor: pointer;
+                transition: all 0.3s;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+                background: #d46b5e;
+                border-color: #d46b5e;
+                color: white;
+        }
+
+        .orders-table-container {
+                overflow-x: auto;
+        }
+
+        .orders-table {
+                width: 100%;
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+                border-collapse: collapse;
+        }
+
+        .orders-table th,
+        .orders-table td {
+                padding: 1rem;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+        }
+
+        .orders-table th {
+                background-color: #f8f9fa;
+                font-weight: 600;
+        }
+
+        .orders-table tr:hover {
+                background-color: #fef9f4;
+        }
+
+        .status-badge {
+                display: inline-block;
+                padding: 0.2rem 0.6rem;
+                border-radius: 20px;
+                font-size: 0.75rem;
+                font-weight: 600;
+        }
+
+        .status-pending {
+                background: #ffc107;
+                color: #2c2c2c;
+        }
+
+        .status-processing {
+                background: #17a2b8;
+                color: white;
+        }
+
+        .status-shipped {
+                background: #007bff;
+                color: white;
+        }
+
+        .status-delivered {
+                background: #28a745;
+                color: white;
+        }
+
+        .status-cancelled {
+                background: #dc3545;
+                color: white;
+        }
+
+        .view-btn {
+                background-color: #d46b5e;
+                color: white;
+                padding: 0.3rem 0.8rem;
+                border-radius: 20px;
+                text-decoration: none;
+                font-size: 0.85rem;
+        }
+
+        .no-orders {
+                text-align: center;
+                padding: 4rem;
+                color: #6c6c6c;
+        }
+
+        .order-count {
+                margin-bottom: 1rem;
+                color: #6c6c6c;
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-header">
+        <h1><i class="fas fa-box"></i> Orders</h1>
+        <p>Manage customer orders</p>
+</section>
+
+<section class="admin-container">
+        <div class="order-count">
+                Total Orders: <strong>{{ orders|length }}</strong>
+        </div>
+
+        <div class="orders-table-container">
+                {% if orders %}
+                <table class="orders-table" id="ordersTable">
+                        <thead>
+                                <tr>
+                                        <th>Order #</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                                {% for order in orders %}
+                                <tr data-status="{{ order.status }}">
+                                        <td><strong>{{ order.order_number }}</strong></td>
+                                        <td>{{ order.customer_name }}<br><small>{{ order.customer_email }}</small></td>
+                                        <td>{{ order.created_at[:10] }}</td>
+                                        <td>${{ "%.2f"|format(order.total) }}</td>
+                                        <td>
+                                                <span class="status-badge status-{{ order.status }}">
+                                                        {{ order.status|capitalize }}
+                                                </span>
+                                        </td>
+                                        <td>
+                                                <a href="{{ url_for('admin_order_detail', order_id=order.id) }}"
+                                                        class="view-btn">
+                                                        <i class="fas fa-eye"></i> View
+                                                </a>
+                                        </td>
+                                </tr>
+                                {% endfor %}
+                        </tbody>
+                </table>
+                {% else %}
+                <div class="no-orders">
+                        <i class="fas fa-box-open" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+                        <h3>No Orders Yet</h3>
+                        <p>When customers place orders, they will appear here.</p>
+                </div>
+                {% endif %}
+        </div>
+</section>
+
+{% block extra_js %}
+<script>
+        // Simple filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const rows = document.querySelectorAll('#ordersTable tbody tr');
+
+        filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                        const status = btn.dataset.status;
+
+                        filterButtons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+
+                        rows.forEach(row => {
+                                if (status === 'all' || row.dataset.status === status) {
+                                        row.style.display = '';
+                                } else {
+                                        row.style.display = 'none';
+                                }
+                        });
+                });
+        });
+</script>
+{% endblock %}
+{% endblock %}

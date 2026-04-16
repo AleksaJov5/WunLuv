@@ -1,0 +1,265 @@
+<!-- templates/admin_order_detail.html -->
+{% extends "base.html" %}
+
+{% block title %}Admin - Order #{{ order.order_number }}{% endblock %}
+
+{% block extra_css %}
+<style>
+        .back-link-bottom {
+                color: #6c6c6c;
+                text-decoration: none;
+                font-size: 0.85rem;
+                font-weight: normal;
+        }
+
+        .back-link-bottom:hover {
+                color: #d46b5e;
+        }
+
+        .order-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                flex-wrap: wrap;
+                margin-bottom: 2rem;
+                padding-bottom: 1rem;
+                border-bottom: 2px solid #eee;
+        }
+
+        .order-number-info {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+        }
+
+        .order-number {
+                font-size: 1.5rem;
+                font-weight: 700;
+        }
+
+        .back-link-top {
+                color: #6c6c6c;
+                text-decoration: none;
+                font-size: 0.9rem;
+                display: block;
+        }
+
+        .back-link-top:hover {
+                color: #d46b5e;
+        }
+        .admin-header {
+                background: linear-gradient(135deg, #2c2c2c 0%, #4a4a4a 100%);
+                color: white;
+                padding: 2rem;
+                text-align: center;
+        }
+
+        .admin-container {
+                max-width: 1000px;
+                margin: 2rem auto;
+                padding: 0 2rem;
+        }
+
+        .order-details {
+                background: white;
+                border-radius: 15px;
+                padding: 2rem;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+                margin-bottom: 2rem;
+        }
+
+        .order-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                margin-bottom: 2rem;
+                padding-bottom: 1rem;
+                border-bottom: 2px solid #eee;
+        }
+
+        .order-number {
+                font-size: 1.5rem;
+                font-weight: 700;
+        }
+
+        .status-form {
+                display: inline-block;
+        }
+
+        .status-select {
+                padding: 0.5rem;
+                border-radius: 20px;
+                border: 1px solid #ddd;
+                font-size: 0.9rem;
+        }
+
+        .update-btn {
+                background: #d46b5e;
+                color: white;
+                border: none;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                margin-left: 0.5rem;
+                cursor: pointer;
+        }
+
+        .info-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+                margin-bottom: 2rem;
+        }
+
+        .info-section {
+                background: #f8f9fa;
+                padding: 1.5rem;
+                border-radius: 10px;
+        }
+
+        .info-section h3 {
+                margin-bottom: 1rem;
+                color: #d46b5e;
+        }
+
+        .items-table {
+                width: 100%;
+                border-collapse: collapse;
+        }
+
+        .items-table th,
+        .items-table td {
+                padding: 0.8rem;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+        }
+
+        .items-table th {
+                background: #f8f9fa;
+        }
+
+        .total-row {
+                text-align: right;
+                padding: 1rem;
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: #d46b5e;
+        }
+
+        .back-link {
+                display: inline-block;
+                margin-top: 1rem;
+                color: #6c6c6c;
+                text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+                .info-grid {
+                        grid-template-columns: 1fr;
+                }
+
+                .order-header {
+                        flex-direction: column;
+                        gap: 1rem;
+                        text-align: center;
+                }
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-header">
+        <h1><i class="fas fa-receipt"></i> Order Details</h1>
+</section>
+
+<section class="admin-container">
+        <div class="order-details">
+                <div class="order-header">
+                        <div class="order-number">
+                                Order #{{ order.order_number }}
+                                <a href="{{ url_for('admin_dashboard') }}#orders-tab" class="back-link-top"
+                                        style="margin-left: 1rem; font-size: 0.9rem;">← Back to Dashboard</a>
+                        </div>
+                        <div>
+                                <form method="POST" action="{{ url_for('admin_update_order_status', order_id=order.id) }}"
+                                        class="status-form">
+                                        <select name="status" class="status-select">
+                                                <option value="pending" {% if order.status=='pending' %}selected{% endif %}>Pending
+                                                </option>
+                                                <option value="processing" {% if order.status=='processing' %}selected{% endif %}>
+                                                        Processing</option>
+                                                <option value="shipped" {% if order.status=='shipped' %}selected{% endif %}>Shipped
+                                                </option>
+                                                <option value="delivered" {% if order.status=='delivered' %}selected{% endif %}>
+                                                        Delivered</option>
+                                                <option value="cancelled" {% if order.status=='cancelled' %}selected{% endif %}>
+                                                        Cancelled</option>
+                                        </select>
+                                        <button type="submit" class="update-btn">Update Status</button>
+                                </form>
+                        </div>
+                </div>
+
+                <div class="info-grid">
+                        <div class="info-section">
+                                <h3>Customer Information</h3>
+                                <p><strong>Name:</strong> {{ order.customer_name }}</p>
+                                <p><strong>Email:</strong> {{ order.customer_email }}</p>
+                                <p><strong>Phone:</strong> {{ order.customer_phone }}</p>
+                        </div>
+
+                        <div class="info-section">
+                                <h3>Shipping Address</h3>
+                                <p>{{ order.shipping_address }}<br>
+                                        {{ order.shipping_city }}, {{ order.shipping_state or '' }} {{
+                                        order.shipping_zip }}<br>
+                                        {{ order.shipping_country }}</p>
+                        </div>
+                </div>
+
+                <div class="info-section">
+                        <h3>Order Items</h3>
+                        <table class="items-table">
+                                <thead>
+                                        <tr>
+                                                <th>Product</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th>Total</th>
+                                        </tr>
+                                </thead>
+                                <tbody>
+                                        {% for item in order_items %}
+                                        <tr>
+                                                <td>{{ item.name }}</td>
+                                                <td>{{ item.quantity }}</td>
+                                                <td>${{ "%.2f"|format(item.price) }}</td>
+                                                <td>${{ "%.2f"|format(item.total) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                </tbody>
+                        </table>
+                        <div class="total-row">
+                                <div>Subtotal: ${{ "%.2f"|format(order.subtotal) }}</div>
+                                <div>Shipping: ${{ "%.2f"|format(order.shipping_cost) }}</div>
+                                <div>Tax: ${{ "%.2f"|format(order.tax) }}</div>
+                                <div style="font-size: 1.4rem;">Total: ${{ "%.2f"|format(order.total) }}</div>
+                        </div>
+                </div>
+
+                {% if order.notes %}
+                <div class="info-section">
+                        <h3>Order Notes</h3>
+                        <p>{{ order.notes }}</p>
+                </div>
+                {% endif %}
+
+                <div class="info-section">
+                        <h3>Order Timeline</h3>
+                        <p><strong>Placed on:</strong> {{ order.created_at }}</p>
+                </div>
+
+                <a href="{{ url_for('admin_dashboard') }}#orders-tab" class="back-link-bottom">← Back to Dashboard</a>
+        </div>
+</section>
+{% endblock %}

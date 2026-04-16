@@ -1,0 +1,144 @@
+<!-- templates/admin_product_form.html -->
+{% extends "base.html" %}
+
+{% block title %}{% if product %}Edit{% else %}Add{% endif %} Product{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+    }
+    
+    .form-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .form-card h2 {
+        margin-bottom: 1.5rem;
+        color: #d46b5e;
+    }
+    
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 1rem;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #d46b5e;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .checkbox-group input {
+        width: auto;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .submit-btn {
+        background-color: #28a745;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+    }
+    
+    .cancel-btn {
+        background-color: #6c757d;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 30px;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .image-preview {
+        margin-top: 0.5rem;
+        max-width: 150px;
+    }
+    
+    .image-preview img {
+        width: 100%;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2>{% if product %}Edit{% else %}Add New{% endif %} Toy</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Name *</label>
+                <input type="text" id="name" name="name" value="{{ product.name if product else '' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="5">{{ product.description if product else '' }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="price">Price ($) *</label>
+                <input type="number" id="price" name="price" step="0.01" value="{{ product.price if product else '' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="image">Image</label>
+                <input type="file" id="image" name="image" accept="image/*">
+                {% if product and product.image_filename %}
+                <div class="image-preview">
+                    <img src="{{ url_for('static', filename='uploads/' + product.image_filename) }}" alt="Current image">
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="is_available" name="is_available" {% if not product or product.is_available %}checked{% endif %}>
+                <label for="is_available">Available for purchase</label>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">{% if product %}Update{% else %}Create{% endif %} Product</button>
+                <a href="{{ url_for('admin_dashboard') }}" class="cancel-btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

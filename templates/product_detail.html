@@ -1,0 +1,220 @@
+<!-- templates/product_detail.html (keeps the description) -->
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+        .product-detail {
+                max-width: 1200px;
+                margin: 3rem auto;
+                padding: 0 2rem;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3rem;
+        }
+
+        .product-image-container {
+                background: white;
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                aspect-ratio: 1 / 1;
+        }
+
+        .product-detail-image {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+        }
+
+        .product-detail-info h1 {
+                font-size: 2rem;
+                color: #2c2c2c;
+                margin-bottom: 0.5rem;
+        }
+
+        .product-detail-price {
+                font-size: 2rem;
+                font-weight: 700;
+                color: #d46b5e;
+                margin: 1rem 0;
+        }
+
+        .product-detail-description {
+                color: #4a4a4a;
+                line-height: 1.8;
+                margin: 1rem 0;
+                white-space: pre-wrap;
+                background: #f8f9fa;
+                padding: 1.5rem;
+                border-radius: 15px;
+        }
+
+        .add-to-cart-section {
+                background: #f8f9fa;
+                padding: 1.5rem;
+                border-radius: 15px;
+                margin: 1.5rem 0;
+        }
+
+        .quantity-wrapper {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1rem;
+        }
+
+        .quantity-label {
+                font-weight: 600;
+                color: #2c2c2c;
+        }
+
+        .quantity-controls {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                background: white;
+                border-radius: 30px;
+                padding: 0.2rem;
+                border: 1px solid #ddd;
+        }
+
+        .quantity-controls button {
+                width: 36px;
+                height: 36px;
+                border: none;
+                background: transparent;
+                border-radius: 50%;
+                cursor: pointer;
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: #d46b5e;
+                transition: background 0.3s;
+        }
+
+        .quantity-controls button:hover {
+                background: #f0f0f0;
+        }
+
+        .quantity-controls input {
+                width: 60px;
+                text-align: center;
+                border: none;
+                font-size: 1.1rem;
+                padding: 0.3rem;
+        }
+
+        .add-to-cart-main {
+                background-color: #d46b5e;
+                color: white;
+                border: none;
+                padding: 0.8rem 2rem;
+                border-radius: 30px;
+                font-size: 1.1rem;
+                font-weight: 600;
+                cursor: pointer;
+                width: 100%;
+                transition: background-color 0.3s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+        }
+
+        .add-to-cart-main:hover {
+                background-color: #b85a4e;
+        }
+
+        .back-btn {
+                display: inline-block;
+                margin-top: 2rem;
+                color: #6c6c6c;
+                text-decoration: none;
+        }
+
+        .back-btn:hover {
+                color: #d46b5e;
+        }
+
+        @media (max-width: 768px) {
+                .product-detail {
+                        grid-template-columns: 1fr;
+                        gap: 1.5rem;
+                }
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="product-detail">
+        <div class="product-image-container">
+                {% if product.image_filename %}
+                <img src="{{ url_for('static', filename='uploads/' + product.image_filename) }}"
+                        alt="{{ product.name }}" class="product-detail-image">
+                {% else %}
+                <img src="https://via.placeholder.com/600x600?text=No+Image" alt="No image"
+                        class="product-detail-image">
+                {% endif %}
+        </div>
+        <div class="product-detail-info">
+                <h1>{{ product.name }}</h1>
+                <div class="product-detail-price">${{ "%.2f"|format(product.price) }}</div>
+
+                <div class="add-to-cart-section">
+                        <form method="POST" action="{{ url_for('add_to_cart_route', product_id=product.id) }}">
+                                <div class="quantity-wrapper">
+                                        <span class="quantity-label">Quantity:</span>
+                                        <div class="quantity-controls">
+                                                <button type="button" onclick="decrement()">-</button>
+                                                <input type="number" name="quantity" id="quantity" value="1" min="1"
+                                                        max="99">
+                                                <button type="button" onclick="increment()">+</button>
+                                        </div>
+                                </div>
+                                <button type="submit" class="add-to-cart-main">
+                                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                        </form>
+                </div>
+
+                <div class="product-detail-description">
+                        <strong>Description:</strong><br>
+                        {{ product.description or 'No description available.' }}
+                </div>
+
+                <a href="{{ url_for('shop') }}" class="back-btn">← Back to Shop</a>
+        </div>
+</div>
+
+{% block extra_js %}
+<script>
+        const quantityInput = document.getElementById('quantity');
+
+        function decrement() {
+                let value = parseInt(quantityInput.value);
+                if (value > 1) {
+                        quantityInput.value = value - 1;
+                }
+        }
+
+        function increment() {
+                let value = parseInt(quantityInput.value);
+                if (value < 99) {
+                        quantityInput.value = value + 1;
+                }
+        }
+
+        // Ensure input stays within bounds
+        quantityInput.addEventListener('change', function () {
+                let value = parseInt(this.value);
+                if (isNaN(value) || value < 1) {
+                        this.value = 1;
+                } else if (value > 99) {
+                        this.value = 99;
+                }
+        });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,243 @@
+<!-- templates/shop.html (updated with better images and no descriptions) -->
+{% extends "base.html" %}
+
+{% block title %}Shop All Toys{% endblock %}
+
+{% block extra_css %}
+<style>
+        .shop-header {
+                background-color: #f5e6d3;
+                padding: 2rem;
+                text-align: center;
+        }
+
+        .shop-header h1 {
+                font-size: 2.5rem;
+                color: #d46b5e;
+        }
+
+        .shop-container {
+                max-width: 1200px;
+                margin: 2rem auto;
+                padding: 0 2rem;
+        }
+
+        .products-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 2rem;
+        }
+
+        .product-card {
+                background: white;
+                border-radius: 15px;
+                overflow: hidden;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                transition: transform 0.3s, box-shadow 0.3s;
+                display: flex;
+                flex-direction: column;
+        }
+
+        .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-image-wrapper {
+                width: 100%;
+                aspect-ratio: 1 / 1;
+                overflow: hidden;
+                background-color: #f5f5f5;
+        }
+
+        .product-image {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+                transform: scale(1.05);
+        }
+
+        .product-info {
+                padding: 1.2rem;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+        }
+
+        .product-name {
+                font-size: 1.2rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+                color: #2c2c2c;
+                line-height: 1.3;
+        }
+
+        .product-price {
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: #d46b5e;
+                margin: 0.5rem 0;
+        }
+
+        .product-actions {
+                display: flex;
+                gap: 0.8rem;
+                margin-top: 1rem;
+                align-items: center;
+        }
+
+        .quantity-selector {
+                display: flex;
+                align-items: center;
+                gap: 0.3rem;
+                background: #f0f0f0;
+                border-radius: 25px;
+                padding: 0.2rem;
+        }
+
+        .quantity-selector input {
+                width: 45px;
+                text-align: center;
+                border: none;
+                background: transparent;
+                font-size: 0.9rem;
+                padding: 0.3rem 0;
+        }
+
+        .quantity-selector button {
+                width: 28px;
+                height: 28px;
+                border: none;
+                background: white;
+                border-radius: 50%;
+                cursor: pointer;
+                font-weight: bold;
+                color: #d46b5e;
+                transition: background 0.3s;
+        }
+
+        .quantity-selector button:hover {
+                background: #d46b5e;
+                color: white;
+        }
+
+        .add-to-cart-btn {
+                background-color: #d46b5e;
+                color: white;
+                border: none;
+                padding: 0.5rem 1rem;
+                border-radius: 25px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                font-weight: 500;
+                transition: background-color 0.3s;
+                flex: 1;
+        }
+
+        .add-to-cart-btn:hover {
+                background-color: #b85a4e;
+        }
+
+        .view-details-btn {
+                background-color: #f0f0f0;
+                color: #4a4a4a;
+                text-decoration: none;
+                padding: 0.5rem 1rem;
+                border-radius: 25px;
+                font-size: 0.9rem;
+                text-align: center;
+                transition: background-color 0.3s;
+        }
+
+        .view-details-btn:hover {
+                background-color: #e0e0e0;
+        }
+
+        .no-products {
+                text-align: center;
+                padding: 4rem;
+                color: #6c6c6c;
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="shop-header">
+        <h1>Our Knitted Collection</h1>
+        <p>Each toy is one-of-a-kind, made with premium soft yarn</p>
+</section>
+
+<section class="shop-container">
+        {% if products %}
+        <div class="products-grid">
+                {% for product in products %}
+                <div class="product-card">
+                        <div class="product-image-wrapper">
+                                {% if product.image_filename %}
+                                <img src="{{ url_for('static', filename='uploads/' + product.image_filename) }}"
+                                        alt="{{ product.name }}" class="product-image">
+                                {% else %}
+                                <img src="https://via.placeholder.com/400x400?text=No+Image" alt="No image"
+                                        class="product-image">
+                                {% endif %}
+                        </div>
+                        <div class="product-info">
+                                <h3 class="product-name">{{ product.name }}</h3>
+                                <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                                <div class="product-actions">
+                                        <form method="POST"
+                                                action="{{ url_for('add_to_cart_route', product_id=product.id) }}"
+                                                style="flex: 1; display: flex; gap: 0.5rem;">
+                                                <div class="quantity-selector">
+                                                        <button type="button" onclick="decrement(this)">-</button>
+                                                        <input type="number" name="quantity" value="1" min="1" max="99"
+                                                                class="qty-input">
+                                                        <button type="button" onclick="increment(this)">+</button>
+                                                </div>
+                                                <button type="submit" class="add-to-cart-btn">
+                                                        <i class="fas fa-shopping-cart"></i> Add
+                                                </button>
+                                        </form>
+                                        <a href="{{ url_for('product_detail', product_id=product.id) }}"
+                                                class="view-details-btn">
+                                                View
+                                        </a>
+                                </div>
+                        </div>
+                </div>
+                {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-products">
+                <i class="fas fa-heart"
+                        style="font-size: 3rem; color: #d46b5e; margin-bottom: 1rem; display: block;"></i>
+                <h2>Coming Soon!</h2>
+                <p>We're busy knitting adorable toys just for you. Check back soon!</p>
+        </div>
+        {% endif %}
+</section>
+
+{% block extra_js %}
+<script>
+        function decrement(btn) {
+                let input = btn.parentElement.querySelector('.qty-input');
+                let value = parseInt(input.value);
+                if (value > 1) {
+                        input.value = value - 1;
+                }
+        }
+
+        function increment(btn) {
+                let input = btn.parentElement.querySelector('.qty-input');
+                let value = parseInt(input.value);
+                if (value < 99) {
+                        input.value = value + 1;
+                }
+        }
+</script>
+{% endblock %}
+{% endblock %}

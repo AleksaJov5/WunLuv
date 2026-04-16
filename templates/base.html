@@ -1,0 +1,319 @@
+<!-- templates/base.html (updated with cart icon) -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Cozy Knits{% endblock %} - Handmade Knitted Toys</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+                rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <style>
+                * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                }
+
+                body {
+                        font-family: 'Inter', sans-serif;
+                        line-height: 1.6;
+                        color: #2c2c2c;
+                        background-color: #fef9f4;
+                }
+
+                /* Header & Navigation */
+                .header {
+                        background-color: #fff;
+                        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+                        position: sticky;
+                        top: 0;
+                        z-index: 100;
+                }
+
+                .navbar {
+                        max-width: 1200px;
+                        margin: 0 auto;
+                        padding: 1rem 2rem;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        flex-wrap: wrap;
+                }
+
+                /* Replace the existing logo styles with these */
+
+                .logo {
+                        display: flex;
+                        align-items: center;
+                        text-decoration: none;
+                        gap: 0.5rem;
+                        -webkit-tap-highlight-color: transparent;  /* Removes tap highlight on mobile */
+                        outline: none;  /* Removes focus outline */
+                }
+
+                .logo-img {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        object-fit: cover;
+                        pointer-events: none;  /* Prevents the image itself from capturing click events */
+                }
+
+                /* If you want text next to logo */
+                .logo-text {
+                        font-size: 1.3rem;
+                        font-weight: 700;
+                        color: #d46b5e;
+                }
+                .logo:focus {
+                        outline: none;  /* Removes outline when clicked */
+                }
+
+                .logo:active {
+                        opacity: 0.8;  /* Optional: subtle feedback instead of flash */
+                        transition: opacity 0.1s;
+                }
+
+                /* For mobile devices */
+                @media (max-width: 768px) {
+                        .logo-img {
+                                width: 35px;
+                                height: 35px;
+                        }
+                        
+                        .logo-text {
+                                font-size: 1.1rem;
+                        }
+                }
+
+                .nav-links {
+                        display: flex;
+                        gap: 2rem;
+                        list-style: none;
+                        align-items: center;
+                }
+
+                .nav-links a {
+                        text-decoration: none;
+                        color: #4a4a4a;
+                        font-weight: 500;
+                        transition: color 0.3s;
+                }
+
+                .nav-links a:hover,
+                .nav-links a.active {
+                        color: #d46b5e;
+                }
+
+                .admin-link {
+                        background-color: #f0f0f0;
+                        padding: 0.3rem 0.8rem;
+                        border-radius: 20px;
+                        font-size: 0.9rem;
+                }
+
+                .cart-link {
+                        position: relative;
+                }
+
+                .cart-count {
+                        position: absolute;
+                        top: -8px;
+                        right: -12px;
+                        background-color: #d46b5e;
+                        color: white;
+                        font-size: 0.7rem;
+                        padding: 0.1rem 0.4rem;
+                        border-radius: 50%;
+                        font-weight: 600;
+                }
+
+                /* Main Content */
+                .main-content {
+                        min-height: calc(100vh - 200px);
+                }
+
+                /* Flash Messages */
+                .flash-messages {
+                        max-width: 1200px;
+                        margin: 1rem auto;
+                        padding: 0 2rem;
+                }
+
+                .flash {
+                        padding: 0.75rem 1rem;
+                        border-radius: 8px;
+                        margin-bottom: 0.5rem;
+                        animation: slideDown 0.3s ease;
+                }
+
+                .flash.success {
+                        background-color: #d4edda;
+                        color: #155724;
+                        border: 1px solid #c3e6cb;
+                }
+
+                .flash.danger,
+                .flash.error {
+                        background-color: #f8d7da;
+                        color: #721c24;
+                        border: 1px solid #f5c6cb;
+                }
+
+                .flash.warning {
+                        background-color: #fff3cd;
+                        color: #856404;
+                        border: 1px solid #ffeeba;
+                }
+
+                .flash.info {
+                        background-color: #d1ecf1;
+                        color: #0c5460;
+                        border: 1px solid #bee5eb;
+                }
+
+                @keyframes slideDown {
+                        from {
+                                opacity: 0;
+                                transform: translateY(-10px);
+                        }
+
+                        to {
+                                opacity: 1;
+                                transform: translateY(0);
+                        }
+                }
+
+                /* Footer */
+                .footer {
+                        background-color: #2c2c2c;
+                        color: #fff;
+                        text-align: center;
+                        padding: 2rem;
+                        margin-top: 3rem;
+                }
+
+                .footer p {
+                        opacity: 0.8;
+                }
+
+                /* Buttons */
+                .btn {
+                        display: inline-block;
+                        padding: 0.6rem 1.2rem;
+                        border: none;
+                        border-radius: 30px;
+                        font-size: 0.9rem;
+                        font-weight: 500;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                        text-decoration: none;
+                }
+
+                .btn-primary {
+                        background-color: #d46b5e;
+                        color: white;
+                }
+
+                .btn-primary:hover {
+                        background-color: #b85a4e;
+                        transform: translateY(-2px);
+                }
+
+                .btn-secondary {
+                        background-color: #e9ecef;
+                        color: #4a4a4a;
+                }
+
+                .btn-secondary:hover {
+                        background-color: #dee2e6;
+                }
+
+                .btn-danger {
+                        background-color: #dc3545;
+                        color: white;
+                }
+
+                .btn-danger:hover {
+                        background-color: #c82333;
+                }
+
+                /* Responsive */
+                @media (max-width: 768px) {
+                        .navbar {
+                                flex-direction: column;
+                                gap: 1rem;
+                        }
+
+                        .nav-links {
+                                flex-wrap: wrap;
+                                justify-content: center;
+                                gap: 1rem;
+                        }
+                }
+        </style>
+        {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+        <header class="header">
+                <nav class="navbar">
+                                <a href="{{ url_for('index') }}" class="logo">
+                                        <img src="{{ url_for('static', filename='imgs/WunLoveLogo.jpg') }}" alt="WunLove" class="logo-img">
+                                        <span class="logo-text">WunLove</span>
+                                </a>
+                        <ul class="nav-links">
+                                <li><a href="{{ url_for('index') }}"
+                                                class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a>
+                                </li>
+                                <li><a href="{{ url_for('shop') }}"
+                                                class="{% if request.endpoint == 'shop' %}active{% endif %}">Shop</a>
+                                </li>
+                                <li><a href="{{ url_for('about') }}"
+                                                class="{% if request.endpoint == 'about' %}active{% endif %}">About</a>
+                                </li>
+                                <li><a href="{{ url_for('contact') }}"
+                                                class="{% if request.endpoint == 'contact' %}active{% endif %}">Contact</a>
+                                </li>
+                                <li class="cart-link">
+                                        <a href="{{ url_for('cart') }}">
+                                                <i class="fas fa-shopping-cart"></i>
+                                                {% if get_cart_count() > 0 %}
+                                                <span class="cart-count">{{ get_cart_count() }}</span>
+                                                {% endif %}
+                                        </a>
+                                </li>
+                                {% if session.admin_logged_in %}
+                                <li><a href="{{ url_for('admin_logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                                {% endif %}
+                        </ul>
+                </nav>
+        </header>
+
+        <div class="flash-messages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+                {% endwith %}
+        </div>
+
+        <main class="main-content">
+                {% block content %}{% endblock %}
+        </main>
+
+        <footer class="footer">
+                <p>&copy; 2026 WunLove - Handmade with Love &nbsp;|&nbsp; Each toy is uniquely crafted</p>
+                {% if session.admin_logged_in %}
+                <p style="font-size: 0.7rem; opacity: 0.5; margin-top: 0.5rem;">
+                        <a href="{{ url_for('admin_dashboard') }}" style="color: white;">Admin Panel</a>
+                </p>
+                {% endif %}
+        </footer>
+
+        {% block extra_js %}{% endblock %}
+</body>
+
+</html>

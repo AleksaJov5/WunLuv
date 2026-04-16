@@ -1,0 +1,95 @@
+<!-- templates/admin_login.html -->
+{% extends "base.html" %}
+
+{% block title %}Admin Login{% endblock %}
+
+{% block extra_css %}
+<style>
+        .login-container {
+                max-width: 450px;
+                margin: 4rem auto;
+                padding: 0 2rem;
+        }
+
+        .login-card {
+                background: white;
+                padding: 2rem;
+                border-radius: 20px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-card h2 {
+                text-align: center;
+                margin-bottom: 1.5rem;
+                color: #d46b5e;
+        }
+
+        .form-group {
+                margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 500;
+        }
+
+        .form-group input {
+                width: 100%;
+                padding: 0.8rem;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 1rem;
+        }
+
+        .form-group input:focus {
+                outline: none;
+                border-color: #d46b5e;
+        }
+
+        .login-btn {
+                width: 100%;
+                background-color: #d46b5e;
+                color: white;
+                padding: 0.8rem;
+                border: none;
+                border-radius: 30px;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: background-color 0.3s;
+        }
+
+        .login-btn:hover {
+                background-color: #b85a4e;
+        }
+
+        .info-text {
+                text-align: center;
+                margin-top: 1rem;
+                font-size: 0.9rem;
+                color: #6c6c6c;
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+        <div class="login-card">
+                <h2><i class="fas fa-lock"></i> Admin Access</h2>
+                <form method="POST">
+                        <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" required autofocus>
+                        </div>
+                        <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="login-btn">Login</button>
+                </form>
+                <div class="info-text">
+                        <small>Default: admin / admin123 (change this in production)</small>
+                </div>
+        </div>
+</div>
+{% endblock %}

@@ -1,0 +1,219 @@
+<!-- templates/index.html -->
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+<style>
+        .hero {
+                background: linear-gradient(135deg, #f5e6d3 0%, #fef9f4 100%);
+                text-align: center;
+                padding: 4rem 2rem;
+        }
+
+        .hero h1 {
+                font-size: 3rem;
+                color: #d46b5e;
+                margin-bottom: 1rem;
+        }
+
+        .hero p {
+                font-size: 1.2rem;
+                color: #6c6c6c;
+                max-width: 600px;
+                margin: 0 auto;
+        }
+
+        .featured-section {
+                max-width: 1200px;
+                margin: 3rem auto;
+                padding: 0 2rem;
+        }
+
+        .section-title {
+                text-align: center;
+                font-size: 2rem;
+                margin-bottom: 2rem;
+                color: #4a4a4a;
+        }
+
+        .products-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 2rem;
+        }
+
+        .product-card {
+                background: white;
+                border-radius: 15px;
+                overflow: hidden;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-image {
+                width: 100%;
+                height: 250px;
+                object-fit: cover;
+                background-color: #f0f0f0;
+        }
+
+        .product-info {
+                padding: 1.2rem;
+        }
+
+        .product-name {
+                font-size: 1.2rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+                color: #2c2c2c;
+        }
+
+        .product-price {
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: #d46b5e;
+                margin: 0.5rem 0;
+        }
+
+        .product-description {
+                color: #6c6c6c;
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+                line-height: 1.4;
+        }
+
+        .view-btn {
+                display: inline-block;
+                background-color: #d46b5e;
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 25px;
+                text-decoration: none;
+                font-size: 0.9rem;
+                transition: background-color 0.3s;
+        }
+
+        .view-btn:hover {
+                background-color: #b85a4e;
+        }
+
+        .no-products {
+                text-align: center;
+                padding: 3rem;
+                color: #6c6c6c;
+        }
+
+        .cta {
+                text-align: center;
+                margin-top: 2rem;
+        }
+
+        .shop-all-btn {
+                display: inline-block;
+                background-color: #4a4a4a;
+                color: white;
+                padding: 0.8rem 2rem;
+                border-radius: 40px;
+                text-decoration: none;
+                font-weight: 600;
+                transition: background-color 0.3s;
+        }
+
+        .shop-all-btn:hover {
+                background-color: #2c2c2c;
+        }
+
+        .features {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 2rem;
+                max-width: 1200px;
+                margin: 3rem auto;
+                padding: 0 2rem;
+                text-align: center;
+        }
+
+        .feature {
+                padding: 1.5rem;
+        }
+
+        .feature i {
+                font-size: 2.5rem;
+                color: #d46b5e;
+                margin-bottom: 1rem;
+        }
+
+        .feature h3 {
+                margin-bottom: 0.5rem;
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+        <h1>Handmade Knitted Toys</h1>
+        <p>Each toy is lovingly crafted with soft yarn and attention to detail. Perfect for gifting or adding charm to
+                any space.</p>
+</section>
+
+<section class="featured-section">
+        <h2 class="section-title">Featured Creations</h2>
+
+        {% if products %}
+        <div class="products-grid">
+                {% for product in products %}
+                <div class="product-card">
+                        {% if product.image_filename %}
+                        <img src="{{ url_for('static', filename='uploads/' + product.image_filename) }}"
+                                alt="{{ product.name }}" class="product-image">
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x250?text=No+Image" alt="No image"
+                                class="product-image">
+                        {% endif %}
+                        <div class="product-info">
+                                <h3 class="product-name">{{ product.name }}</h3>
+                                <p class="product-description">{{ product.description[:100] }}{% if
+                                        product.description|length > 100 %}...{% endif %}</p>
+                                <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="view-btn">View
+                                        Details →</a>
+                        </div>
+                </div>
+                {% endfor %}
+        </div>
+        <div class="cta">
+                <a href="{{ url_for('shop') }}" class="shop-all-btn">Browse All Toys →</a>
+        </div>
+        {% else %}
+        <div class="no-products">
+                <i class="fas fa-heart"
+                        style="font-size: 3rem; color: #d46b5e; margin-bottom: 1rem; display: block;"></i>
+                <p>No products available yet. Check back soon for adorable knitted toys!</p>
+        </div>
+        {% endif %}
+</section>
+
+<section class="features">
+        <div class="feature">
+                <i class="fas fa-hand-sparkles"></i>
+                <h3>Handmade with Love</h3>
+                <p>Each toy is carefully knitted by hand, making every piece unique.</p>
+        </div>
+        <div class="feature">
+                <i class="fas fa-child"></i>
+                <h3>Safe for All Ages</h3>
+                <p>Made with child-safe, hypoallergenic materials.</p>
+        </div>
+        <div class="feature">
+                <i class="fas fa-gift"></i>
+                <h3>Perfect Gift</h3>
+                <p>Beautifully packaged and ready to bring joy to someone special.</p>
+        </div>
+</section>
+{% endblock %}
