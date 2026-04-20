@@ -384,42 +384,13 @@ def about():
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
-    """Contact page - sends email when form is submitted"""
+    """Contact page"""
     cart_count = get_cart_count()
     
     if request.method == 'POST':
-        name = request.form.get('name', '').strip()
-        email = request.form.get('email', '').strip()
-        message = request.form.get('message', '').strip()
-        ip_address = request.remote_addr
-        
-        # Validate required fields
-        if not name:
-            flash('Please enter your name.', 'danger')
-            return render_template('contact.html', cart_count=cart_count)
-        
-        if not email:
-            flash('Please enter your email address.', 'danger')
-            return render_template('contact.html', cart_count=cart_count)
-        
-        if not is_valid_email(email):
-            flash('Please enter a valid email address.', 'danger')
-            return render_template('contact.html', cart_count=cart_count)
-        
-        if not message:
-            flash('Please enter your message.', 'danger')
-            return render_template('contact.html', cart_count=cart_count)
-        
-        # Send the email
-        success, result = send_contact_email(name, email, message, ip_address)
-        
-        if success:
-            flash('Thank you for your message! We\'ll get back to you soon.', 'success')
-            return redirect(url_for('contact'))
-        else:
-            flash(f'There was an error sending your message. Please try again later.', 'danger')
-            print(f"Contact form error: {result}")
-            return render_template('contact.html', cart_count=cart_count)
+        # In a real app, you'd send an email here
+        flash('Thank you for your message! We\'ll get back to you soon.', 'success')
+        return redirect(url_for('contact'))
     
     return render_template('contact.html', cart_count=cart_count)
 
@@ -661,77 +632,7 @@ def utility_processor():
         return get_cart_count()
     return dict(get_cart_count=get_cart_count_global)
 
-# ============================================================
-# EMAIL CONFIGURATION - Add this after other config
-# ============================================================
-import smtplib
-import re
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
-
-# Your email credentials (the email that will receive messages)
-CONTACT_EMAIL = "aleksajov5@gmail.com"  # Change to your email
-EMAIL_PASSWORD = "apew pijv jqak zrjr"  # Your app password
-
-def is_valid_email(email):
-    """Basic email validation."""
-    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    return re.match(pattern, email) is not None
-
-def send_contact_email(name, email, message, ip_address):
-    """Send contact form submission to your email."""
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    subject = f"New Contact Form Message from {name}"
-    
-    body = f"""
-A new message was submitted from your website's contact form.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  MESSAGE DETAILS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Name: {name}
-Email: {email}
-IP Address: {ip_address}
-Sent at: {now}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  MESSAGE CONTENT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-{message}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  REPLY TO
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Reply to: {email}
-"""
-
-    try:
-        # Create email
-        msg = MIMEMultipart()
-        msg["From"] = email  # The person filling out the form
-        msg["To"] = CONTACT_EMAIL
-        msg["Subject"] = subject
-        msg.attach(MIMEText(body, "plain"))
-        
-        # Send email
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        server.starttls()
-        server.login(CONTACT_EMAIL, EMAIL_PASSWORD)
-        server.send_message(msg)
-        server.quit()
-        
-        return True, "Message sent successfully!"
-        
-    except Exception as e:
-        print(f"Email error: {e}")
-        return False, f"Failed to send message: {str(e)}"
 
 
 
