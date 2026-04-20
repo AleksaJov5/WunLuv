@@ -138,7 +138,7 @@ def add_to_cart(product_id, quantity=1):
     else:
         # Get product details from database
         conn = get_db()
-        product = conn.execute('SELECT id, name, price FROM products WHERE id = ? AND is_available = 1', (product_id,)).fetchone()
+        product = conn.execute('SELECT id, name, price, image_filename FROM products WHERE id = ? AND is_available = 1', (product_id,)).fetchone()
         conn.close()
         
         if product:
@@ -146,6 +146,7 @@ def add_to_cart(product_id, quantity=1):
                 'id': product['id'],
                 'name': product['name'],
                 'price': float(product['price']),
+                'image_filename': product['image_filename'],  # ✅ ADD THIS LINE
                 'quantity': quantity
             }
     
@@ -172,7 +173,7 @@ def update_cart_quantity(product_id, quantity):
         if quantity <= 0:
             del cart[product_id_str]
         else:
-            cart[product_id_str]['quantity'] = quantity
+            cart[product_id_str]['quantity'] = quantity  # ✅ Keeps existing image_filename
         save_cart(cart)
         return True
     return False
