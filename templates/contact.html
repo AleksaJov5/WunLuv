@@ -184,25 +184,21 @@
 
 {% block extra_js %}
 <script>
-    // Real form submission - no fake preview
-    // The form will submit normally to the server
-    // Flash messages will appear on page reload
-    
-    // Optional: Add form validation before submit
-    const form = document.getElementById('contactForm');
-    
-    form.addEventListener('submit', function(e) {
-        const name = document.getElementById('name').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const message = document.getElementById('message').value.trim();
-        
-        if (!name || !email || !message) {
-            e.preventDefault();
-            alert('Please fill in all fields.');
-        }
-        // If all fields are filled, the form submits normally
-        // The server will handle the email sending and flash messages
-    });
+        const form = document.getElementById('contactForm');
+        const successDiv = document.getElementById('formSuccess');
+
+        form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                // In a real app, you'd send this to a backend endpoint
+                // For demo, just show success message
+                form.style.display = 'none';
+                successDiv.style.display = 'block';
+                setTimeout(() => {
+                        form.reset();
+                        form.style.display = 'block';
+                        successDiv.style.display = 'none';
+                }, 3000);
+        });
 </script>
 {% endblock %}
 {% endblock %}
